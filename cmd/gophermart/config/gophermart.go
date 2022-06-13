@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	defaultServerAddress  = "127.0.0.1:8080"
-	defaultAccrualAddress = "127.0.0.1:8081"
-	//defaultDataBaseConnection = "postgresql://localhost:5432/gophermart?sslmode=disable"
+	defaultServerAddress      = "127.0.0.1:8080"
+	defaultAccrualAddress     = "127.0.0.1:8081"
+	defaultDataBaseConnection = "postgresql://localhost:5432/gophermart?sslmode=disable"
 )
 
 var (
@@ -37,7 +37,7 @@ func setConfig() {
 	rootCmd.Flags().StringVarP(&ServerAddress, "address", "a", defaultServerAddress,
 		"Pair of ip:port to listen on")
 
-	rootCmd.Flags().StringVarP(&DatabaseURI, "databaseURI", "d", "",
+	rootCmd.Flags().StringVarP(&DatabaseURI, "databaseURI", "d", defaultDataBaseConnection,
 		"Database URI for loyalty store")
 
 	rootCmd.Flags().StringVarP(&AccrualAddress, "accrualAddress", "r", defaultAccrualAddress,

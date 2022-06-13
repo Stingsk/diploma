@@ -23,7 +23,7 @@ func NewDBStore(connection *sql.DB) *DBStore {
 func (db *DBStore) CreateUser(ctx context.Context, login string, password string) error {
 	var existingUser string
 	row := db.connection.QueryRowContext(ctx,
-		"SELECT login FROM users WHERE login = $1", login)
+		"SELECT login FROM gophermart.users WHERE login = $1", login)
 
 	err := row.Scan(&existingUser)
 	if !errors.Is(err, nil) && !errors.Is(err, sql.ErrNoRows) {
@@ -43,7 +43,7 @@ func (db *DBStore) CreateUser(ctx context.Context, login string, password string
 	}
 
 	_, err = db.connection.ExecContext(ctx,
-		"INSERT INTO users (login, password) VALUES ($1, $2)",
+		"INSERT INTO gophermart.users (login, password) VALUES ($1, $2)",
 		user.Login, user.Password)
 
 	return err
@@ -52,7 +52,7 @@ func (db *DBStore) CreateUser(ctx context.Context, login string, password string
 func (db *DBStore) ValidateUser(ctx context.Context, login string, password string) error {
 	var userPassword string
 	row := db.connection.QueryRowContext(ctx,
-		"SELECT password FROM users WHERE login = $1", login)
+		"SELECT password FROM gophermart.users WHERE login = $1", login)
 
 	err := row.Scan(&userPassword)
 	if !errors.Is(err, nil) && !errors.Is(err, sql.ErrNoRows) {

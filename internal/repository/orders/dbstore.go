@@ -26,7 +26,7 @@ func (db *DBStore) CreateOrder(ctx context.Context, login string, order string) 
 	var existingOrder int64
 	var orderLogin string
 	row := db.connection.QueryRowContext(ctx,
-		"SELECT number, login FROM orders WHERE number = $1", order)
+		"SELECT number, login FROM gophermart.orders WHERE number = $1", order)
 
 	err := row.Scan(&existingOrder, &orderLogin)
 	if !errors.Is(err, nil) && !errors.Is(err, sql.ErrNoRows) {
@@ -41,7 +41,7 @@ func (db *DBStore) CreateOrder(ctx context.Context, login string, order string) 
 	}
 
 	_, err = db.connection.ExecContext(ctx,
-		"INSERT INTO orders (number, login) VALUES ($1, $2)", order, login)
+		"INSERT INTO gophermart.orders (number, login) VALUES ($1, $2)", order, login)
 
 	return err
 }
@@ -55,7 +55,7 @@ func (db *DBStore) UpdateOrder(ctx context.Context, order *Order) error {
 
 	var existingOrder string
 	row := db.connection.QueryRowContext(ctx,
-		"SELECT number FROM orders WHERE number = $1", order.Number)
+		"SELECT number FROM gophermart.orders WHERE number = $1", order.Number)
 
 	err := row.Scan(&existingOrder)
 	if err != nil {
@@ -63,10 +63,10 @@ func (db *DBStore) UpdateOrder(ctx context.Context, order *Order) error {
 	}
 
 	if _, ok := withoutAccrualStatuses[order.Status]; ok {
-		_, err = db.connection.ExecContext(ctx, "UPDATE orders set status = $1 WHERE number = $2",
+		_, err = db.connection.ExecContext(ctx, "UPDATE gophermart.orders set status = $1 WHERE number = $2",
 			order.Status, order.Number)
 	} else {
-		_, err = db.connection.ExecContext(ctx, "UPDATE orders set accrual = $1, status = $2 WHERE number = $3",
+		_, err = db.connection.ExecContext(ctx, "UPDATE gophermart.orders set accrual = $1, status = $2 WHERE number = $3",
 			order.Accrual, order.Status, order.Number)
 	}
 
@@ -95,7 +95,7 @@ func (db *DBStore) GetProcessedOrders(ctx context.Context, login string) ([]Orde
 	orders := make([]Order, 0)
 
 	ordersRows, err := db.connection.QueryContext(ctx,
-		"SELECT number,status,accrual,uploaded_at FROM orders WHERE login = $1 AND status = 'PROCESSED'", login)
+		"SELECT number,status,accrual,uploaded_at FROM gophermart.orders WHERE login = $1 AND status = 'PROCESSED'", login)
 
 	if err != nil {
 		return nil, err
@@ -129,7 +129,7 @@ func (db *DBStore) getOtherOrders(ctx context.Context, login string) ([]Order, e
 	orders := make([]Order, 0)
 
 	ordersRows, err := db.connection.QueryContext(ctx,
-		"SELECT number,status,uploaded_at FROM orders WHERE login = $1 AND withdraw IS NULL AND NOT status = 'PROCESSED'", login)
+		"SELECT number,status,uploaded_at FROM gophermart.orders WHERE login = $1 AND withdraw IS NULL AND NOT status = 'PROCESSED'", login)
 
 	if err != nil {
 		return nil, err
@@ -163,7 +163,7 @@ func (db *DBStore) GetUnprocessedOrders(ctx context.Context) ([]Order, error) {
 	orders := make([]Order, 0)
 
 	ordersRows, err := db.connection.QueryContext(ctx,
-		"SELECT number FROM orders WHERE status = 'NEW'")
+		"SELECT number FROM gophermart.orders WHERE status = 'NEW'")
 
 	if err != nil {
 		return nil, err
@@ -197,7 +197,7 @@ func (db *DBStore) Withdraw(ctx context.Context, login string, withdraw *Withdra
 	var existingOrder int64
 	var orderLogin string
 	row := db.connection.QueryRowContext(ctx,
-		"SELECT number, login FROM orders WHERE number = $1", withdraw.Order)
+		"SELECT number, login FROM gophermart.orders WHERE number = $1", withdraw.Order)
 
 	err := row.Scan(&existingOrder, &orderLogin)
 	if !errors.Is(err, nil) && !errors.Is(err, sql.ErrNoRows) {
@@ -221,7 +221,7 @@ func (db *DBStore) Withdraw(ctx context.Context, login string, withdraw *Withdra
 	}
 
 	_, err = db.connection.ExecContext(ctx,
-		"INSERT INTO orders (number, login, withdraw) VALUES ($1, $2, $3)", withdraw.Order, login, withdraw.Sum)
+		"INSERT INTO gophermart.orders (number, login, withdraw) VALUES ($1, $2, $3)", withdraw.Order, login, withdraw.Sum)
 
 	return err
 }
@@ -230,7 +230,7 @@ func (db *DBStore) GetWithdrawals(ctx context.Context, login string) ([]Withdraw
 	withdrawals := make([]Withdraw, 0)
 
 	withdrawalsRows, err := db.connection.QueryContext(ctx,
-		"SELECT number,withdraw,uploaded_at FROM orders WHERE login = $1 AND withdraw IS NOT NULL", login)
+		"SELECT number,withdraw,uploaded_at FROM gophermart.orders WHERE login = $1 AND withdraw IS NOT NULL", login)
 
 	if err != nil {
 		return nil, err

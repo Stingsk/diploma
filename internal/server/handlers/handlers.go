@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	requestTimeout = 1 * time.Second
+	requestTimeout = 10 * time.Second
 )
 
 var ErrInvalidToken = errors.New("invalid auth token")
