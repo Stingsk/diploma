@@ -44,7 +44,7 @@ func (s *LoyaltyServer) Run(ctx context.Context) {
 
 	pollWorker := PollerWorker{Cfg: PollerConfig{
 		AccrualAddress: s.Cfg.AccrualAddress,
-		PollInterval:   10000,
+		PollInterval:   1000,
 	}}
 
 	pollContext, cancelPoller := context.WithCancel(ctx)
